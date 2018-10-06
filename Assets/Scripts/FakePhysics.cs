@@ -74,7 +74,7 @@ public abstract class FakePhysics : MonoBehaviour {
     //We are using triggers, so this gets called on overlap
    private void OnTriggerEnter2D(Collider2D vCollision) {
         FakePhysics tOtherObject = vCollision.gameObject.GetComponent<FakePhysics>();
-        Debug.Assert(tOtherObject != null, "Other Object is not FakePhyics compatible");
+        Debug.Assert(tOtherObject != null, "Other Object is not FakePhysics compatible");
         ObjectHit(tOtherObject);
     }
 
