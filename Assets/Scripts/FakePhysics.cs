@@ -2,30 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FakePhysics : MonoBehaviour {
+public abstract class FakePhysics : MonoBehaviour {
 
-    private Rigidbody2D mRB2;       //We dont want other classes messing with this, as we control Physics
+    protected Rigidbody2D mRB2;       //We only want safe classes messing with this, as we control Physics
 
-    private SpriteRenderer mSR;     //May need this later
+    protected SpriteRenderer mSR;     //May need this later
 
-    private BoxCollider2D mBC2D;
-
-    [SerializeField]
-    private float Speed=1.0f;
 
     [SerializeField]
-    private float RotationSpeed = 360.0f;
+    protected float Speed=1.0f;
 
-    private Vector3 mVelocity = Vector3.zero;
+    [SerializeField]
+    protected float RotationSpeed = 360.0f;
+
+    protected Vector3 mVelocity = Vector3.zero;
+
+    BoxCollider2D mTemp;
+
+    protected Collider2D mC2D; // this works as all 2D colliders are based on this
 
     // Use this for initialization
-    void Start () {
+    protected virtual void Start () {
 
         mSR = gameObject.GetComponent<SpriteRenderer>(); //Grab SR assigned in IDE
         Debug.Assert(mSR != null, "Error:Missing SpriteRenderer");
 
-        mBC2D = gameObject.GetComponent<BoxCollider2D>();
-        mBC2D.isTrigger = true;     //Set it to trigger in code
+        mC2D = gameObject.GetComponent<Collider2D>();
+        mC2D.isTrigger = true;     //Set it to trigger in code
 
         mRB2 = gameObject.AddComponent<Rigidbody2D>();  //Add RidgidBody2D in Code
         mRB2.isKinematic = true;       //Don't use Physics as we'll do our own
@@ -40,14 +43,12 @@ public class FakePhysics : MonoBehaviour {
         }
     }
 
-    void DoMove() {
-        float tThrust = Input.GetAxis("Vertical") * Speed;       //Get Thrust
-        float tRotate = Input.GetAxis("Horizontal") * RotationSpeed; //Get Rotation
-        transform.Rotate(0, 0, tRotate * RotationSpeed * Time.deltaTime);    //Rotate ship
-        mVelocity += Quaternion.Euler(0, 0, transform.rotation.z) * transform.up * tThrust * Speed; //Non mass velocity
-        transform.position += mVelocity * Time.deltaTime; //Work out new position
-    }
 
+    //DefaultMove Does nothing
+    protected virtual   void  DoMove() {
+
+    }
+    
     bool    DoWrap(out Vector3 vNewPosition) {
         float   tHeight = Camera.main.orthographicSize;  //Figure out what Camera can see
         float   tWidth = Camera.main.aspect * tHeight;  //Use aspect ratio to work out Width
@@ -68,5 +69,18 @@ public class FakePhysics : MonoBehaviour {
             tMoved = true;
         }
         return tMoved;
+    }
+
+    //We are using triggers, so this gets called on overlap
+   private void OnTriggerEnter2D(Collider2D vCollision) {
+        FakePhysics tOtherObject = vCollision.gameObject.GetComponent<FakePhysics>();
+        Debug.Assert(tOtherObject != null, "Other Object is not FakePhyics compatible");
+        ObjectHit(tOtherObject);
+    }
+
+
+    //virtual functions can be overridded in derived classes
+    protected   virtual void    ObjectHit(FakePhysics vOtherObject) {
+        Debug.LogFormat("{0} hit by {1}",name, vOtherObject.name);      //Just print it for now
     }
 }
