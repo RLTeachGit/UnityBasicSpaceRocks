@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerShip : FakePhysics {
 
+    [SerializeField]
+    private Transform GunPosition;
+
     //The rock just moves by simply adding the velocity & rotation
     protected override void DoMove() {
         float tThrust = Input.GetAxis("Vertical") * Speed;       //Get Thrust
@@ -11,5 +14,14 @@ public class PlayerShip : FakePhysics {
         transform.Rotate(0, 0, tRotate  * Time.deltaTime);    //Rotate ship
         mVelocity += Quaternion.Euler(0, 0, transform.rotation.z) * transform.up * tThrust * Speed; //Non mass velocity
         transform.position += mVelocity * Time.deltaTime; //Work out new position
+
+        DoFiring();
+
+    }
+
+    void    DoFiring() {
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            GM.CreateBullet(GunPosition.position, transform.up);
+        }
     }
 }

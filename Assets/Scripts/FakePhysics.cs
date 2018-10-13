@@ -28,6 +28,7 @@ public abstract class FakePhysics : MonoBehaviour {
         Debug.Assert(mSR != null, "Error:Missing SpriteRenderer");
 
         mC2D = gameObject.GetComponent<Collider2D>();
+        Debug.Assert(mC2D != null, "Error:Missing Collider2D");
         mC2D.isTrigger = true;     //Set it to trigger in code
 
         mRB2 = gameObject.AddComponent<Rigidbody2D>();  //Add RidgidBody2D in Code
