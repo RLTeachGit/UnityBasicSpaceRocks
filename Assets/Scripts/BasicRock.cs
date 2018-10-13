@@ -20,7 +20,7 @@ public class BasicRock : FakePhysics {
 
     protected override void DoMove() {
         transform.Rotate(0, 0, mRotation * Time.deltaTime);    //Rotate Rock
-        transform.position += mVelocity * Time.deltaTime;      //Work out new position
+        base.DoMove(); //Call Base class which will apply Velocity
     }
 }
 

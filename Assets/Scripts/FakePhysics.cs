@@ -13,6 +13,9 @@ public abstract class FakePhysics : MonoBehaviour {
     protected float Speed=1.0f;
 
     [SerializeField]
+    protected float MaxSpeed = 10.0f;
+
+    [SerializeField]
     protected float RotationSpeed = 360.0f;
 
     protected Vector3 mVelocity = Vector3.zero;
@@ -38,18 +41,26 @@ public abstract class FakePhysics : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         Vector3 tNewPostion;        //Storage for new position
-        DoMove();
+        DoMove();       //Call our child specifc move function
         if(DoWrap(out tNewPostion)) {       //Check if we should wrap
             transform.position = tNewPostion;   //Yes we need to have new position
         }
     }
 
-
-    //DefaultMove Does nothing
-    protected virtual   void  DoMove() {
-
+    //Clamp velocity to MaxSpeed
+    protected   Vector3    ClampedVelocity() {
+        if(mVelocity.magnitude> MaxSpeed) {
+            return mVelocity.normalized * MaxSpeed;
+        }
+        return mVelocity;
     }
-    
+
+
+    //DefaultMove applies the velocity scaled by Time.Deltatime
+    protected virtual   void  DoMove() {
+        transform.position += mVelocity * Time.deltaTime; //Work out new position
+    }
+
     bool    DoWrap(out Vector3 vNewPosition) {
         float   tHeight = Camera.main.orthographicSize;  //Figure out what Camera can see
         float   tWidth = Camera.main.aspect * tHeight;  //Use aspect ratio to work out Width
