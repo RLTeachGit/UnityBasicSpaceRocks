@@ -12,7 +12,7 @@ public class Bullet : FakePhysics {
 
     public  void    FireBullet(Vector3 vPosition, Vector3 vDirection) {
         transform.position = vPosition;
-        mVelocity = vDirection.normalized * Speed;
+        mVelocity = vDirection * Speed;
     }
 
     protected override void DoMove() {

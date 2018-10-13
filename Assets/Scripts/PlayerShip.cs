@@ -20,7 +20,7 @@ public class PlayerShip : FakePhysics {
     }
     void DoFiring() {
         if (Input.GetKeyDown(KeyCode.Space)) {
-            GM.CreateBullet(GunPosition.position, transform.up);
+            GM.CreateBullet(GunPosition.position, transform.up*Mathf.Max(1.0f,mVelocity.magnitude));
         }
     }
 }
